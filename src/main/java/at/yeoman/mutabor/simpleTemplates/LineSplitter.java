@@ -29,7 +29,7 @@ class LineSplitter
     {
         String normalizedText = normalize(text);
 
-        return newline.split(normalizedText);
+        return newline.split(normalizedText, -1);
     }
 
     private static String normalize(String text)

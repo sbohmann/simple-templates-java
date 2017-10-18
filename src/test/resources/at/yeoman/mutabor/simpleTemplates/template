@@ -1,0 +1,12 @@
+@_title;
+
+This is an example of an actual template. @_snippet1; <- @__snippet1; and so on...
+
+    Indented sentence with @_snippet1; and @_snippet2;...
+    {
+        @_snippet1;
+        @_snippet2;
+    }
+
+  In the mid@_snippet1;dle of a word.
+  In the mid@_snippet2;dle of another word.

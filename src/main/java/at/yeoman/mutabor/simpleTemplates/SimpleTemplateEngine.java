@@ -8,69 +8,91 @@ import java.util.regex.Pattern;
 
 public class SimpleTemplateEngine
 {
-    private static final Pattern placeholder = Pattern.compile("@_(\\w+)\\;");
+    private static final Pattern placeholder = Pattern.compile("@_([a-zA-Z][a-zA-Z0-9]*)\\;");
     private static final Pattern newline = Pattern.compile("\\r?\\n");
-
-    private String text;
+    
+    private String template;
     private VariableResolver resolver;
-
+    
     private StringBuilder result = new StringBuilder();
-
-    public SimpleTemplateEngine(String text, Map<String, String> variables, Function<String,String> resolveVariable)
+    
+    private SimpleTemplateEngine(String template, Map<String, String> variables, Function<String, String> resolveVariable)
     {
-        this.text = text;
+        this.template = template;
         resolver = new VariableResolver(variables, resolveVariable);
     }
-
-    public static String replaceVariables(String text, Map<String,String> variables)
+    
+    /**
+     * Resolves variables from the variables Map
+     */
+    public static String replaceVariables(String template, Map<String, String> variables)
     {
-        return new SimpleTemplateEngine(text, variables, null).replaceVariables();
+        return new SimpleTemplateEngine(template, variables, null).replaceVariables();
     }
-
-    public static String replaceVariables(String text, Function<String,String> resolveVariable)
+    
+    /**
+     * Resolves variables from the resolveVariables function
+     */
+    public static String replaceVariables(String template, Function<String, String> resolveVariable)
     {
-        return new SimpleTemplateEngine(text, null, resolveVariable).replaceVariables();
+        return new SimpleTemplateEngine(template, null, resolveVariable).replaceVariables();
     }
-
-    public static String replaceVariables(String text, Map<String,String> variables, Function<String,String> resolveUnknownVariable)
+    
+    /**
+     * Resolves variables first from the variables Map, then from the resolveVariables function
+     */
+    public static String replaceVariables(String template, Map<String, String> variables, Function<String, String> resolveVariable)
     {
-        return new SimpleTemplateEngine(text, variables, resolveUnknownVariable).replaceVariables();
+        return new SimpleTemplateEngine(template, variables, resolveVariable).replaceVariables();
     }
-
+    
     private String replaceVariables()
     {
         processAllLines();
-
+        
         return result.toString();
     }
-
+    
     private void processAllLines()
     {
-        for (Line line : LineSplitter.splitText(text))
+        boolean first = true;
+        for (Line line : LineSplitter.splitText(template))
         {
-            processLine(line.fullText, line.indentation);
+            if (!first)
+            {
+                result.append('\n');
+            }
+            
+            processLine(line.fullText, "\n" + line.indentation);
+            
+            first = false;
         }
     }
-
-    private void processLine(String text, String indentation)
+    
+    private void processLine(String text, String lineBreak)
     {
         Matcher matcher = placeholder.matcher(text);
-
+        
         int index = 0;
-
+        
         while (matcher.find())
         {
-            result.append(text.substring(index, matcher.start()));
-            result.append(resolveVariable(matcher.group(1), indentation));
+            appendNormalizedPlainText(text.substring(index, matcher.start()));
+            result.append(resolveVariable(matcher.group(1), lineBreak));
             index = matcher.end();
         }
-
-        result.append(text.substring(index, text.length()));
+    
+        appendNormalizedPlainText(text.substring(index, text.length()));
     }
-
-    private String resolveVariable(String name, String indentation)
+    
+    private String resolveVariable(String name, String lineBreak)
     {
         String rawValue = resolver.resolveVariable(name);
-        return newline.matcher(name).replaceAll(indentation);
+        return newline.matcher(rawValue).replaceAll(lineBreak);
+    }
+    
+    private void appendNormalizedPlainText(String plainText)
+    {
+        result.append(plainText.replace("@__", "@_"));
     }
 }
