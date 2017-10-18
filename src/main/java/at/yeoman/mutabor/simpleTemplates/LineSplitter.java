@@ -50,7 +50,7 @@ class LineSplitter
     {
         Matcher matcher = initialWhitespace.matcher(rawLine);
 
-        if (!matcher.matches())
+        if (!matcher.find())
         {
             throw new RuntimeException("Logical error");
         }
