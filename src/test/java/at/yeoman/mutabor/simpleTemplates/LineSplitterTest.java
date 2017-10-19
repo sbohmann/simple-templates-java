@@ -48,18 +48,24 @@ public class LineSplitterTest
     public void trailingEmptyLine()
     {
         List<Line> result = LineSplitter.splitText(" \t \n");
-        Assert.assertEquals(1, result.size());
-        Line line = result.get(0);
-        Assert.assertEquals(line.indentation, line.fullText);
+        Assert.assertEquals(2, result.size());
+        Line first = result.get(0);
+        Line second = result.get(1);
+        Assert.assertEquals(first.indentation, first.fullText);
+        Assert.assertEquals("", second.indentation);
+        Assert.assertEquals("", second.fullText);
     }
 
     @Test
     public void trailingEmptyLineWithCompoundNewline()
     {
         List<Line> result = LineSplitter.splitText(" \t \r\n");
-        Assert.assertEquals(1, result.size());
-        Line line = result.get(0);
-        Assert.assertEquals(line.indentation, line.fullText);
+        Assert.assertEquals(2, result.size());
+        Line first = result.get(0);
+        Line second = result.get(1);
+        Assert.assertEquals(first.indentation, first.fullText);
+        Assert.assertEquals("", second.indentation);
+        Assert.assertEquals("", second.fullText);
     }
 
     @Test
