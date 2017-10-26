@@ -33,7 +33,7 @@ public class SimpleTemplateEngine
     /**
      * Resolves variables from the resolveVariables function
      */
-    public static String replaceVariables(String template, Function<String, String> resolveVariable)
+    static String replaceVariables(String template, Function<String, String> resolveVariable)
     {
         return new SimpleTemplateEngine(template, null, resolveVariable).replaceVariables();
     }
@@ -88,7 +88,21 @@ public class SimpleTemplateEngine
     private String resolveVariable(String name, String lineBreak)
     {
         String rawValue = resolver.resolveVariable(name);
-        return newline.matcher(rawValue).replaceAll(lineBreak);
+        StringBuilder result = new StringBuilder();
+        String[] split = newline.split(rawValue, -1);
+        for (int index = 0; index < split.length; ++index)
+        {
+            String line = split[index];
+            if (index < split.length - 1 || line.length() > 0)
+            {
+                if (index > 0)
+                {
+                    result.append(lineBreak);
+                }
+                result.append(line);
+            }
+        }
+        return result.toString();
     }
     
     private void appendNormalizedPlainText(String plainText)

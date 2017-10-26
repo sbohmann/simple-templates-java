@@ -12,7 +12,7 @@ public class LineSplitterTest
     public void emptyString()
     {
         List<Line> result = LineSplitter.splitText("");
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class LineSplitterTest
     @Test
     public void trailingEmptyLine()
     {
-        List<Line> result = LineSplitter.splitText(" \t \n");
+        List<Line> result = LineSplitter.splitText(" \t \n\n");
         Assert.assertEquals(2, result.size());
         Line first = result.get(0);
         Line second = result.get(1);
@@ -59,7 +59,7 @@ public class LineSplitterTest
     @Test
     public void trailingEmptyLineWithCompoundNewline()
     {
-        List<Line> result = LineSplitter.splitText(" \t \r\n");
+        List<Line> result = LineSplitter.splitText(" \t \r\n\r\n");
         Assert.assertEquals(2, result.size());
         Line first = result.get(0);
         Line second = result.get(1);
